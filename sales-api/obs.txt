@@ -1,0 +1,3 @@
+docker image build -t sales-api . // criar imagem
+docker run --name sales-api -e PORT=8082 -p 8082:8082 sales-api 
+docker container prune // limpar

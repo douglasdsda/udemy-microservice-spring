@@ -1,0 +1,3 @@
+docker image build -t auth-api . // criar imagem
+docker run --name auth-api -p 8080:8080 auth-api
+docker container prune // limpar
