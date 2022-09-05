@@ -1,5 +1,6 @@
 package br.com.cursoudemy.productapi.modules.produto.service;
 
+import br.com.cursoudemy.productapi.config.exceptions.SuccessResponse;
 import br.com.cursoudemy.productapi.config.exceptions.ValidationException;
 import br.com.cursoudemy.productapi.modules.category.dto.CategoryRequest;
 import br.com.cursoudemy.productapi.modules.category.dto.CategoryResponse;
@@ -15,6 +16,9 @@ import br.com.cursoudemy.productapi.modules.supplier.repository.SupplierReposito
 import br.com.cursoudemy.productapi.modules.supplier.service.SupplierService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.springframework.util.ObjectUtils.isEmpty;
 
@@ -36,6 +40,16 @@ public class ProductService {
         var supplier = supplierService.findById(request.getSupplierId());
 
         var product = productRepository.save(Product.of(request, supplier, category));
+        return ProductResponse.of(product);
+    }
+
+    public ProductResponse update(ProductRequest request, Integer id){
+        validateProductDataInFormed(request);
+        var category = categoryService.findById(request.getCategoryId());
+        var supplier = supplierService.findById(request.getSupplierId());
+        var product = Product.of(request, supplier, category);
+        product.setId(id);
+        productRepository.save(product);
         return ProductResponse.of(product);
     }
 
@@ -66,6 +80,56 @@ public class ProductService {
         }
     }
 
+     // novos
 
 
+    public List<ProductResponse> findAll(){
+        var list = productRepository.findAll();
+        return list.stream().map(ProductResponse::of).collect(Collectors.toList());
+    }
+
+    public List<ProductResponse> findByName(String name){
+        if(isEmpty(name)){
+            throw new ValidationException("The product name be informed");
+        }
+        return productRepository
+                .findAll()
+                .stream()
+                .map(ProductResponse::of)
+                .collect(Collectors.toList());
+    }
+
+    public List<ProductResponse> findByCategoryId(Integer categoryID){
+        validateInformedId(categoryID, "categoryID");
+        return productRepository.findByCategoryId(categoryID).stream().map(ProductResponse::of).collect(Collectors.toList());
+    }
+
+    public List<ProductResponse> findBySupplierId(Integer supplierID){
+        validateInformedId(supplierID, "supplierID");
+        return productRepository.findBySupplierId(supplierID).stream().map(ProductResponse::of).collect(Collectors.toList());
+    }
+
+    public ProductResponse findByResponse(Integer id){
+        return ProductResponse.of(findById(id));
+    }
+
+    public Boolean existsByCategoryId(Integer categoryId){
+        return productRepository.existsByCategoryId(categoryId);
+    }
+
+    public Boolean existsBySupplierId(Integer supplierId){
+        return productRepository.existsBySupplierId(supplierId);
+    }
+
+    public SuccessResponse delete(Integer id) {
+        validateInformedId(id, "product");
+        productRepository.deleteById(id);
+        return SuccessResponse.create("the product was deleted");
+    }
+
+    private void validateInformedId(Integer id, String type){
+        if(isEmpty(id)){
+            throw new ValidationException("The "+type+" must be informed.");
+        }
+    }
 }

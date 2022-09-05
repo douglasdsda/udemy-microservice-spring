@@ -4,6 +4,8 @@ server:
 spring:
   application:
     name: product-api
+  main:
+    allow-circular-references: true
 
   datasource:
     driver-class-name: org.postgresql.Driver
@@ -20,7 +22,12 @@ spring:
     hibernate:
       ddl-auto: create-drop
       format_sql: true
+      namingStrategy: org.hibernate.cfg.DefaultNamingStrategy
     show_sql: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQL9Dialect
+
+app-config:
+  secrets:
+    api-secret: ${API_SECRET:YXUtYXBpLXNlY3JldC1kZXY9MTIzNDU2}
