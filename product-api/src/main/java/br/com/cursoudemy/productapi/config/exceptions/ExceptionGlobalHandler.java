@@ -22,6 +22,6 @@ public class ExceptionGlobalHandler {
         var details = new ExceptionDetails();
         details.setStatus(HttpStatus.UNAUTHORIZED.value());
         details.setMessage(authenticationException.getMessage());
-        return new ResponseEntity<>(details, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(details, HttpStatus.UNAUTHORIZED);
     }
 }

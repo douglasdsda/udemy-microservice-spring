@@ -4,8 +4,10 @@ import br.com.cursoudemy.productapi.config.exceptions.SuccessResponse;
 import br.com.cursoudemy.productapi.modules.category.dto.CategoryRequest;
 import br.com.cursoudemy.productapi.modules.category.dto.CategoryResponse;
 import br.com.cursoudemy.productapi.modules.category.service.CategoryService;
+import br.com.cursoudemy.productapi.modules.produto.dto.ProductCheckStockRequest;
 import br.com.cursoudemy.productapi.modules.produto.dto.ProductRequest;
 import br.com.cursoudemy.productapi.modules.produto.dto.ProductResponse;
+import br.com.cursoudemy.productapi.modules.produto.dto.ProductSalesResponse;
 import br.com.cursoudemy.productapi.modules.produto.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -55,4 +57,14 @@ public class ProductController {
     public SuccessResponse delete(@PathVariable(name = "id") Integer id){
         return productService.delete(id);
     }
+
+    @GetMapping("{productId}/sales")
+    public ProductSalesResponse findProductSales(@PathVariable Integer id){
+        return productService.findProductSales(id);
+    }
+    @PostMapping("check-stock")
+    public SuccessResponse checkProductStock(@RequestBody ProductCheckStockRequest request){
+        return productService.checkProductsStock(request);
+    }
+
 }
