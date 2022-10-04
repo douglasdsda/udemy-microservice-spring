@@ -1,12 +1,14 @@
 import mongoose from 'mongoose';
 
-import { MONGO_DB_URL } from '../secrets/secrets.js'
+import { MONGO_DB_URL } from '../constants/secrets.js'
 
-export function connect(){
-  mongoose.connect(MONGO_DB_URL, {
-      useNewUrlParser: true,
-     //user: "admin",
-    // pass: "123456",
+export async function connectMongoDb(){
+ mongoose.connect(MONGO_DB_URL) 
+  .then(() => {
+    console.info('Connectad:::');
+  })
+  .catch((err) => {
+    console.error('Error:::', err);
   })
 
   mongoose.connection.on("connected", function(){

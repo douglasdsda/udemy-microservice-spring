@@ -1,9 +1,9 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import UserRepository from "../repository/UserRepository.js";
-import * as httpStatus from "../../../config/contants/HttpStatus.js";
+import {  SUCCESS, INTERNAL_SERVER_ERROR, BAD_REQUEST, FORBIDDEN,  } from "../../../config/constants/HttpStatus.js";
 import UserException from "../exception/UserException.js";
-import * as secrets from "../../../config/contants/secrets.js";
+import { API_SECRET } from "../../../config/constants/secrets.js";
 class UserService {
   async findByEmail(req) {
     try {
@@ -16,7 +16,7 @@ class UserService {
       this.validateAuthenticatedUser(user, authUser);
        
       return {
-        status: httpStatus.SUCCESS,
+        status: SUCCESS,
         user: {
           id: user.id,
           name: user.name,
@@ -25,7 +25,7 @@ class UserService {
       };
     } catch (error) {
       return {
-        status: error.status ? error.status : httpStatus.INTERNAL_SERVER_ERROR,
+        status: error.status ? error.status : INTERNAL_SERVER_ERROR,
         message: error.message,
       };
     }
@@ -40,18 +40,18 @@ class UserService {
 
       await this.validatePassword(password, user.password);
       let authUser = { id: user.id, name: user.name, email: user.email };
-      const acessToken = jwt.sign({ authUser }, secrets.API_SECRET, {
+      const acessToken = jwt.sign({ authUser }, API_SECRET, {
         expiresIn: "1d",
       });
 
       return {
-        status: httpStatus.SUCCESS,
+        status: SUCCESS,
         acessToken,
       };
 
     } catch (error) {
       return {
-        status: error.status ? error.status : httpStatus.INTERNAL_SERVER_ERROR,
+        status: error.status ? error.status : INTERNAL_SERVER_ERROR,
         message: error.message,
       };
     }
@@ -60,7 +60,7 @@ class UserService {
   validateRequestData(email) {
     if (!email) {
       throw new UserException(
-        httpStatus.BAD_REQUEST,
+        BAD_REQUEST,
         "User email was not informed."
       );
     }
@@ -69,7 +69,7 @@ class UserService {
   validateUserNotFound(user) {
     if (!user) {
       throw new UserException(
-        httpStatus.BAD_REQUEST,
+        BAD_REQUEST,
         "User user was not found."
       );
     }
@@ -78,7 +78,7 @@ class UserService {
   async validatePassword(password, hashPassword) {
     if (!(await bcrypt.compare(password, hashPassword))) {
       throw new UserException(
-        httpStatus.UNAUTHORIZED,
+        UNAUTHORIZED,
         "Password doesn't match."
       );
     }
@@ -87,7 +87,7 @@ class UserService {
   validateAcessTokenData(email, password) {
     if (!email || !password) {
       throw new UserException(
-        httpStatus.UNAUTHORIZED,
+        UNAUTHORIZED,
         "Email and password must be informed."
       );
     }
@@ -96,7 +96,7 @@ class UserService {
   validateAuthenticatedUser(user, authUser) {
     if (!authUser || user.id !== authUser.id) {
       throw new UserException(
-        httpStatus.FORBIDDEN,
+        FORBIDDEN,
         "You cannout see this user data."
       )
     }

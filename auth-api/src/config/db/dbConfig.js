@@ -8,9 +8,12 @@ const sequelize = new Sequelize("auth-db", "admin", "123456", {
     syncOnAssociation: true,
     timestamps: false,
     underscored: true,
-    underscoreAll: true,
+    underscoredAll: true,
     freezeTableName: true,
-  }
+  },
+  pool: {
+    acquire: 180000,
+  },
 });
 
 sequelize
